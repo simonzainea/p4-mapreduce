@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mapreduce"
+description = "EECS 485 MapReduce"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "bs4",
+    "click",
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-mock",
+    "pdbp",
+]
+
+[project.scripts]
+mapreduce-manager = "mapreduce.manager.__main__:main"
+mapreduce-worker = "mapreduce.worker.__main__:main"
+mapreduce-submit = "mapreduce.submit:main"
+
+[tool.setuptools]
+packages = ["mapreduce", "mapreduce.manager", "mapreduce.worker", "mapreduce.utils"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+# Specify which groups of lint rules to use.
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "D",   # pydocstyle
+    "I",   # isort
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "PT",  # flake8-pytest-style
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "PL",  # pylint subset
+    "RET", # flake8-return
+    "C4",  # flake8-comprehensions
+    "ARG", # flake8-unused-arguments
+]
+# Ignore specific rule violations.  See https://docs.astral.sh/ruff/rules.
+ignore = [
+    # Disable the following two rules because they conflict with other rules.
+    "D203",  # one-blank-line-before-class (conflicts with D211)
+    "D213",  # multi-line-summary-second-line (conflicts with D212)
+
+    # Disable the following rules because they're made redundant by the formatter.
+    "W191",  # tab-indentation
+    "E111",  # indentation-with-invalid-multiple
+    "E114",  # indentation-with-invalid-multiple-comment
+    "E117",  # over-indented
+    "D206",  # indent-with-spaces
+    "D300",  # triple-single-quotes
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.per-file-ignores]
+# Package __init__.py files re-export the public MapReduce and test utilities.
+"__init__.py" = ["F401"]
+# The provided submit CLI has one keyword argument per Click option.
+"**/mapreduce/submit.py" = ["PLR0913"]
+# Ports, task IDs, and counts in test assertions are expected constants.
+"test_*.py" = ["PLR2004"]
+"conftest.py" = ["PLR2004"]
+
+[tool.ruff.lint.pylint]
+# The Worker's main() takes one argument per required Click option (six).
+# P4's pylint configuration also allowed six arguments.
+max-args = 6
+
+[tool.ruff.lint.isort]
+# Keep import groups identical in the starter, solution, and autograder trees.
+known-first-party = ["mapreduce", "utils"]
